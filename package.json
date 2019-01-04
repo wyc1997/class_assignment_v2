@@ -1,0 +1,24 @@
+{
+  "name": "class_assignment_v2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "create-react-app": "^2.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wyc1997/class_assignment_v2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wyc1997/class_assignment_v2/issues"
+  },
+  "homepage": "https://github.com/wyc1997/class_assignment_v2#readme"
+}
