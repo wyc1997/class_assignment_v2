@@ -21,4 +21,8 @@ app.post('/user', (req, res)=>{
     res.status(201).send({res:'Success!'})
 })
 
+app.get('/schedule/:id', (req, res)=>{
+    res.status(201).send({data:studentData[req.params.id].tableData})
+})
+
 app.listen(3001)

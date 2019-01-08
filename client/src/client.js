@@ -10,6 +10,19 @@ function logStudentData(data, cb) {
     .then(cb)
 }
 
+function getStudentSchedule(id, cb) {
+    return fetch(`/schedule/${id}`, {
+        method:"GET",
+        headers:{
+            "Content-Type": "application/json",
+            "Accept":"application/json"
+        }
+    })
+    .then(checkStatus)
+    .then(parseJSON)
+    .then(cb)
+}
+
 function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
         return response;
@@ -25,5 +38,5 @@ function parseJSON(response) {
     return response.json();
 }
 
-const Client = { logStudentData };
+const Client = { logStudentData, getStudentSchedule };
 export default Client;

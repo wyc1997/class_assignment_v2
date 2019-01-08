@@ -101,7 +101,7 @@ class StudentSubmissionForm extends Component
 
     postToServer()
     {
-        var data = {numClass:this.state.numClass, teacher:this.state.teacher, location:this.state.location, pickedTime:this.state.pickedTime}
+        var data = {numClass:this.state.numClass, teacher:this.state.teacher, location:this.state.location, pickedTime:this.state.pickedTime, tableData:this.state.tableData}
         Client.logStudentData(data, (res)=>{
             alert(res.res)
         })
