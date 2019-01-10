@@ -6,6 +6,7 @@ class StudentTimeTable extends React.Component
     constructor(props)
     {
         super(props)
+        console.log("this is", props.match.params.Id)
         var arr=[]
         for (var i = 0; i < 13; i++)
         {
@@ -13,7 +14,7 @@ class StudentTimeTable extends React.Component
         }
         this.state={schedule:arr}
         var data
-        Client.getStudentSchedule(props.Id, (res)=>{
+        Client.getStudentSchedule(props.match.params.Id, (res)=>{
             data = res.data
             this.setState({schedule:data})
             console.log('Successfully received data from server!')

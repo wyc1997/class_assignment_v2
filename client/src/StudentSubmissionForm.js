@@ -200,4 +200,4 @@ function TimeTable(props)
     </div>)
 }
 
-export default StudentSubmissionForm;
+export default StudentSubmissionForm

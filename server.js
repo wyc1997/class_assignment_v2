@@ -22,6 +22,7 @@ app.post('/user', (req, res)=>{
 })
 
 app.get('/schedule/:id', (req, res)=>{
+    console.log(req.params.id)
     res.status(201).send({data:studentData[req.params.id].tableData})
 })
 
