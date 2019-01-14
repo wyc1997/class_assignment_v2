@@ -26,4 +26,8 @@ app.get('/schedule/:id', (req, res)=>{
     res.status(201).send({data:studentData[req.params.id].tableData})
 })
 
+app.get('/', (req,res)=>{
+    console.log('hello')
+})
+
 app.listen(3001)

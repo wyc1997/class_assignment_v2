@@ -22,7 +22,6 @@ class StudentTimeTable extends React.Component
         console.log(this.state.schedule)
     }
 
-    compo
 
     render()
     {
