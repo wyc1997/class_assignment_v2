@@ -13,26 +13,26 @@ class AssignmentTable extends React.Component
         }
         arr[0][0] = 1
         arr[0][1] = 2
-        this.state={data:arr}
+        this.state={tableData:arr, studentData:[]}
     }
 
     render()
     {
-        var result = []
-        for (var i = 0; i < 13; i++)
-        {
-            var temp = []
-            for (var j = 0; j < 7; j++)
-            {
-                if (this.state.data[i][j] == 0)
-                {
-                    temp.push("No student")
-                }
-            }
-            result.push(temp)
-        }
+        // var result = []
+        // for (var i = 0; i < 13; i++)
+        // {
+        //     var temp = []
+        //     for (var j = 0; j < 7; j++)
+        //     {
+        //         if (this.state.TableData[i][j] == 0)
+        //         {
+        //             temp.push("No student")
+        //         }
+        //     }
+        //     result.push(temp)
+        // }
 
-        return (<TimeTable data={this.state.data} content={result}/>)
+        return (<TimeTable data={this.state.tableData} content={this.state.studentData}/>)
     }
 }
 
@@ -46,24 +46,23 @@ function Content(props)
     {
         return <div>No student!</div>
     }
-    else if (props.cellData == 1)
+    else
     {
-        return (<div>
-            <div># of student: 1</div>
-            <div>No conflict!</div>
-            <select><option>Name 1</option></select>
-            <button>confirm</button>
-        </div>)
-    }
-    else 
-    {
+        var status
+        if (props.cellData == 1)
+        {
+            status = 'No Conflict'
+        }
+        else
+        {
+            status = 'Conflict!'
+        }
+        var list = props.content.map((item)=>{return(<option>{item.name}</option>)})
+
         return (<div>
             <div># of student: {props.cellData}</div>
-            <div>Conflict!</div>
-            <select>
-                <option>Name 1</option>
-                <option>Name 2</option>
-            </select>
+            <div>{status}</div>
+            <select>{list}</select>
             <button>confirm</button>
         </div>)
     }
@@ -108,9 +107,28 @@ function Row(props)
 {
     var list = []
     list.push(<Cell functional={true} key={-1} row={props.row} col={-1} content={props.time} />)
-    for (var i = 0; i < 7; i++)
-    {   
-        list.push(<Cell functional={props.functional} key={i} row={props.row} col ={i} cellData={props.rowData[i]} content={props.content[i]}/>)
+    if (props.functional)
+    {
+        for (var i = 0; i < 7; i++)
+        {   
+
+            list.push(<Cell functional={true} key={i} row={props.row} col ={i} cellData={props.rowData[i]} content={props.content[i]}/>)
+        }
+    }
+    else        
+    {
+        for (var i = 0; i < 7; i++)
+        {
+            var arr = []
+            for (var j = 0; j < props.content.length; j++)
+            {
+                if (props.content[j].col == i)
+                {
+                    arr.push(props.content[j])
+                }
+            }
+            list.push(<Cell functional={false} key={i} row={props.row} col={i} cellData={props.rowData[i]} content={arr} />)
+        }
     }
     return <div style={{display:"flex"}} >{list}</div>
 }
@@ -122,7 +140,15 @@ function TimeTable(props)
     for (var i = 0; i < 13; i++)
     {   
         var timeSlot = (i + 8).toString() + ":30"
-        list.push(<Row functional={false} key = {i} row={i} time={timeSlot} rowData={props.data[i]} content={props.content[i]} />)
+        var arr = []
+        for (var j = 0; j < props.content.length; j++)
+        {
+            if (props.content[j].row == i)
+            {
+                arr.push(props.content[j])
+            }
+        }
+        list.push(<Row functional={false} key = {i} row={i} time={timeSlot} rowData={props.data[i]} content={arr} />)
     }
     return (<div>
         <div style={{display:"flex"}}><Row functional={true} row={-1} rowData={[]} time={"Time"} content={["MON","TUE","WED","THU","FRI","SAT","SUN"]} /></div>
