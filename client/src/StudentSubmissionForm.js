@@ -12,7 +12,7 @@ class StudentSubmissionForm extends Component
         {
             arr.push(new Array(7).fill(0))
         }
-        this.state={value:"", tableData:arr, isMouseDown:false, numClass:"", teacher:"Teacher 1", subject:"Reading",location:"location 1", pickedTime:[]}
+        this.state={value:"", nameStud:"", tableData:arr, isMouseDown:false, numClass:"", teacher:"Teacher 1", subject:"Reading",location:"location 1", pickedTime:[]}
         this.changeHandler=this.changeHandler.bind(this)
         this.tableToggle=this.tableToggle.bind(this)
         this.mouseDown=this.mouseDown.bind(this)
@@ -101,7 +101,7 @@ class StudentSubmissionForm extends Component
 
     postToServer()
     {
-        var data = {numClass:this.state.numClass, teacher:this.state.teacher, location:this.state.location, pickedTime:this.state.pickedTime, tableData:this.state.tableData}
+        var data = {name:this.state.nameStud, numClass:this.state.numClass, teacher:this.state.teacher, location:this.state.location, pickedTime:this.state.pickedTime, tableData:this.state.tableData}
         Client.logStudentData(data, (res)=>{
             alert(res.res)
         })
@@ -123,6 +123,8 @@ class StudentSubmissionForm extends Component
             preferredTimeSelect.push(<select name={"preferredTime"+i} key={i} onChange={()=>this.changeHandler}>{listCopy.map((item,index)=><option key={index}>{item.day} {item.time}</option>)}</select>)
         }
         return (<form>
+            <div>name of student:</div>
+            <input name="nameStud" value={this.state.nameStud} onChange={(event)=>this.changeHandler(event)}/>
             <div>number of classes</div>
             <input name="numClass" value={this.state.numClass} onChange={(event)=>this.changeHandler(event)}/>
             <div>Teacher:</div>
