@@ -14,6 +14,34 @@ class AssignmentTable extends React.Component
         arr[0][0] = 1
         arr[0][1] = 2
         this.state={tableData:arr, studentData:[{name:"Jack", numClass:2, timeSlot:[{row:0, col:0}, {row:0,col:1}], confirmedTime:[]},{name:"Jane", numClass:1, timeSlot:[{row:0,col:1}], confirmedTime:[]}], summaryData:{totalStudent:0, totalLesson:0, totalConflicts:0}}
+        this.clickHandler=this.clickHandler.bind(this)
+    }
+
+    clickHandler(row, col, stdt)
+    {
+        console.log(stdt)
+        var arr = this.state.tableData
+        arr[row][col] = stdt
+        var list = this.state.studentData
+        for (var s of list)
+        {
+            for (var i = 0; i < s.timeSlot.length; i++)
+            {
+                if (s.timeSlot[i].row == row && s.timeSlot[i].col == col)
+                {
+                    s.timeSlot.splice(i, 1)
+                    break;
+                }
+            }
+        }
+        for (var s of list)
+        {
+            if (s.name == stdt)
+            {
+                s.confirmedTime.push({row:row, col:col})
+            }
+        }
+        this.setState({tableData:arr, studentData:list})
     }
 
     render()
@@ -21,40 +49,65 @@ class AssignmentTable extends React.Component
         return (<div>
             <div>Summary</div>
             
-            <TimeTable data={this.state.tableData} content={this.state.studentData}/>
+            <TimeTable data={this.state.tableData} content={this.state.studentData} clickHandler={this.clickHandler}/>
             </div>)
     }
 }
 
-function Content(props)
+class Content extends React.Component
 {
-    if (props.functional)
+    constructor(props)
     {
-        return <div>{props.content}</div>
-    }
-    if (props.cellData == 0)
-    {
-        return <div>No student!</div>
-    }
-    else
-    {
-        var status
-        if (props.cellData == 1)
+        super(props)
+        if (this.props.content[0])
         {
-            status = 'No Conflict'
+            this.state={selectValue:this.props.content[0].name}
         }
         else
         {
-            status = 'Conflict!'
+            this.state={selectValue:""}
         }
-        var list = props.content.map((item, index)=>{return(<option key={index}>{item.name}</option>)})
+        this.changeHandler=this.changeHandler.bind(this)
+    }
 
-        return (<div>
-            <div># of student: {props.cellData}</div>
-            <div>{status}</div>
-            <select>{list}</select>
-            <button>confirm</button>
-        </div>)
+    changeHandler(event)
+    {
+        this.setState({selectValue: event.target.value})
+    }
+
+    render()
+    {
+        if (this.props.functional)
+        {
+            return <div>{this.props.content}</div>
+        }
+        if (this.props.cellData == 0)
+        {
+            return <div>No student!</div>
+        }
+        else
+        {
+            var status
+            if (this.props.cellData == 1)
+            {
+                status = <div><div># of student: {this.props.cellData}</div><div>'No Conflict'</div></div>
+            }
+            else if (isNaN(this.props.cellData))
+            {
+                status = <div>assigned:  {this.props.cellData} </div>
+            }
+            else
+            {
+                status = <div><div># of student: {this.props.cellData}</div><div>'Conflict!'</div></div>
+            }
+            var list = this.props.content.map((item, index)=>{return(<option key={index}>{item.name}</option>)})
+
+            return (<div>
+                {status}
+                <select onChange={this.changeHandler}>{list}</select>
+                <button onClick={()=>this.props.clickHandler(this.props.row, this.props.col, this.state.selectValue)}>confirm</button>
+            </div>)
+        }
     }
 }
 
@@ -70,7 +123,7 @@ function Cell(props)
             backgroundColor:"white",
         }
     }
-    else if (props.cellData == 1)
+    else if (props.cellData == 1||isNaN(props.cellData))
     {
         style = {
             width:110,
@@ -89,7 +142,7 @@ function Cell(props)
         }
     }
     
-    return <div style={style} key={props.col}><Content functional={props.functional} cellData={props.cellData} content={props.content}/></div>
+    return <div style={style} key={props.col}><Content functional={props.functional} row={props.row} col={props.col} cellData={props.cellData} content={props.content} clickHandler={props.clickHandler}/></div>
 } 
 
 function Row(props)
@@ -115,13 +168,12 @@ function Row(props)
                 {
                     if (t.col == i)
                     {
-                        console.log("yes, row:" + props.row + " col:" + i)
                         arr.push(element)
                         break
                     }
                 }
             }
-            list.push(<Cell functional={false} key={i} row={props.row} col={i} cellData={props.rowData[i]} content={arr} />)
+            list.push(<Cell functional={false} key={i} row={props.row} col={i} cellData={props.rowData[i]} content={arr} clickHandler={props.clickHandler}/>)
         }
     }
     return <div style={{display:"flex"}} >{list}</div>
@@ -145,7 +197,7 @@ function TimeTable(props)
                 }
             }
         }
-        list.push(<Row functional={false} key = {i} row={i} time={timeSlot} rowData={props.data[i]} content={arr} />)
+        list.push(<Row functional={false} key = {i} row={i} time={timeSlot} rowData={props.data[i]} content={arr} clickHandler={props.clickHandler}/>)
     }
     return (<div>
         <div style={{display:"flex"}}><Row functional={true} row={-1} rowData={[]} time={"Time"} content={["MON","TUE","WED","THU","FRI","SAT","SUN"]} /></div>
