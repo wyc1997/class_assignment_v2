@@ -46,9 +46,24 @@ class AssignmentTable extends React.Component
 
     render()
     {
+        var conflictCounter = 0
+        for (var a of this.state.tableData)
+        {
+            for (var e of a)
+            {
+                if (!isNaN(e) && e > 1)
+                {
+                    conflictCounter++
+                }
+            }
+        }
+        var studentTable = this.state.studentData.map((item, index)=>{return <div>Name: {item.name} | Number of classes needed: {item.numClass} | Number of classes assigned : {item.confirmedTime.length}</div>})
         return (<div>
             <div>Summary</div>
-            
+            <div>{conflictCounter} conflicted time slot(s)!</div>
+            <div style={{width:600,border:"1px dashed black"}}>Student summary
+                {studentTable}
+            </div>
             <TimeTable data={this.state.tableData} content={this.state.studentData} clickHandler={this.clickHandler}/>
             </div>)
     }
