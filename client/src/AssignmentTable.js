@@ -1,4 +1,5 @@
 import React from 'react'
+import Client from './client'
 
 
 class AssignmentTable extends React.Component

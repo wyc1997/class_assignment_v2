@@ -12,7 +12,7 @@ class StudentSubmissionForm extends Component
         {
             arr.push(new Array(7).fill(0))
         }
-        this.state={value:"", nameStud:"", tableData:arr, isMouseDown:false, numClass:"", teacher:"Teacher 1", subject:"Reading",location:"location 1", pickedTime:[]}
+        this.state={value:"", nameStud:"", tableData:arr, isMouseDown:false, numClass:"", teacher:"Teacher 1", subject:"Reading",location:"location 1", pickedTime:[], preferredTime:[]}
         this.changeHandler=this.changeHandler.bind(this)
         this.tableToggle=this.tableToggle.bind(this)
         this.mouseDown=this.mouseDown.bind(this)
@@ -20,6 +20,7 @@ class StudentSubmissionForm extends Component
         this.mouseUp=this.mouseUp.bind(this)
         this.processPickedTime=this.processPickedTime.bind(this)
         this.postToServer=this.postToServer.bind(this)
+        this.preferredTimeHandler=this.preferredTimeHandler.bind(this)
     }
 
     mouseDown(row, col)
@@ -101,7 +102,7 @@ class StudentSubmissionForm extends Component
 
     postToServer()
     {
-        var data = {name:this.state.nameStud, numClass:this.state.numClass, teacher:this.state.teacher, location:this.state.location, pickedTime:this.state.pickedTime, tableData:this.state.tableData}
+        var data = {name:this.state.nameStud, numClass:this.state.numClass, teacher:this.state.teacher, location:this.state.location, pickedTime:this.state.pickedTime, preferredTime:this.state.preferredTime}
         Client.logStudentData(data, (res)=>{
             alert(res.res)
         })
@@ -112,6 +113,21 @@ class StudentSubmissionForm extends Component
         this.setState({[event.target.name]:event.target.value},()=>console.log(this.state))
     }
 
+    preferredTimeHandler(event)
+    {
+        var arr = this.state.preferredTime
+        var index = event.target.name[event.target.name.length-1]
+        if (parseInt(index) > arr.length)
+        {
+            arr.push(event.target.value)
+        }
+        else
+        {
+            arr[parseInt(index)] = event.target.value
+        }
+        this.setState({preferredTime: arr})
+    }
+
     render()
     {
         var listCopy = []
@@ -120,7 +136,7 @@ class StudentSubmissionForm extends Component
         var preferredTimeSelect=[]
         for (var i = 0; i < this.state.numClass; i++)
         {
-            preferredTimeSelect.push(<select name={"preferredTime"+i} key={i} onChange={()=>this.changeHandler}>{listCopy.map((item,index)=><option key={index}>{item.day} {item.time}</option>)}</select>)
+            preferredTimeSelect.push(<select name={"preferredTime"+i} key={i} index={i} onChange={(event)=>this.preferredTimeHandler(event)}>{listCopy.map((item,index)=><option key={index}>{item.day} {item.time}</option>)}</select>)
         }
         return (<form>
             <div>name of student:</div>

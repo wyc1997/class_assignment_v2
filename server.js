@@ -1,4 +1,5 @@
 const fs = require('fs')
+const pg =  require('pg')
 const express = require('express')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
@@ -7,6 +8,9 @@ const errorHandler = require('errorhandler')
 var studentData = []
 
 const app = express()
+const db = new pg.Client('postgres://localhost:5432/test')
+db.connect()
+
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static("client/build"));
