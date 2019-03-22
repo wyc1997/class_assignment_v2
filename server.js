@@ -21,6 +21,32 @@ app.use(errorHandler())
 
 app.post('/user', (req, res)=>{
     studentData.push(req.body)
+    var total_students
+    db.query('SELECT COUNT(*) FROM students', (err, res) => {
+        if (err) {
+            console.log(err.stack)
+        }
+        else {
+            console.log(res.rows[0].count)
+            total_students = parseInt(res.rows[0].count)
+        }
+    })
+    db.query('SELECT * FROM students WHERE name = $1', [req.body.name], (err, res)=> 
+    {
+        if (err) {
+            console.log(err.stack)
+        }
+        else {
+            if (res.rowCount == 0) {
+                db.query('INSERT INTO students (id, name) VALUES ($1, $2)', [total_students+1, req.body.name], (err, res)=> {
+                    if (err) {
+                        console.log(err.stack)
+                    }
+                })
+                // db.query('INSERT INTO ')
+            }
+        }
+    })
     console.log(studentData)
     res.status(201).send({res:'Success!'})
 })
