@@ -75,7 +75,8 @@ class StudentSubmissionForm extends Component
                 }
                 if (this.state.tableData[i][j])
                 {
-                    pickedTime.push({day:_day,time:((i+8).toString()+":30")})
+                    // pickedTime.push({day:_day,time:((i+8).toString()+":30")})
+                    pickedTime.push({day:j,time:i})
                 }
             }
         }
@@ -145,8 +146,8 @@ class StudentSubmissionForm extends Component
             <input name="numClass" value={this.state.numClass} onChange={(event)=>this.changeHandler(event)}/>
             <div>Teacher:</div>
             <select name="teacher" value={this.state.teacher} onChange={(event)=>this.changeHandler(event)}>
-                <option>Teacher 1</option>
-                <option>Teacher 2</option>
+                <option>Y</option>
+                <option>M</option>
             </select>
             <div>Subject:</div>
             <select nmae="subject" value={this.state.subject} onChange={(event)=>this.changeHandler(event)} >
