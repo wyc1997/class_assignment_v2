@@ -20,7 +20,7 @@ app.use(morgan('dev'))
 app.use(errorHandler())
 
 app.post('/user', async (req, res)=>{
-    studentData.push(req.body)
+    console.log(req.body)
     var total_students, student_id, teacher_id
     teacher_id = 1
     db.query('SELECT COUNT(*) FROM students', (err, res) => {
@@ -50,12 +50,22 @@ app.post('/user', async (req, res)=>{
     console.log(student_id)
     for (var e of req.body.pickedTime)
     {
-        var time_id
+        let time_id
         console.log(e.time, e.day)
         time_id = parseInt(e.time)*7 + parseInt(e.day) + 1
         db.query('INSERT INTO raw_students_available (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [student_id, time_id, teacher_id], (err) => {
             if (err) {console.log(err.stack)}
         })
+    }
+    for (var e of req.body.preferredTime)
+    {
+        let time_id = await db.query('SELECT id FROM timeslots WHERE time = $1', [e])
+        if (time_id.err) {console.log(time_id.err.stack)}
+        else {
+            db.query('INSERT INTO raw_students_preferred (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [student_id, time_id.rows[0].id, teacher_id], (err)=> {
+                if (err) {console.log(err.stack)}
+            })
+        }
     }
     // console.log(studentData)
     res.status(201).send({res:'Success!'})
