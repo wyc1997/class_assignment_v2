@@ -49,33 +49,8 @@ class StudentSubmissionForm extends Component
         {
             for (var j = 0; j<7; j++)
             {
-                var _day
-                switch (j) {
-                    case 0:
-                        _day="MON"
-                        break;
-                    case 1:
-                        _day="TUE"
-                        break;
-                    case 2:
-                        _day="WED"
-                        break;
-                    case 3:
-                        _day="THU"
-                        break;
-                    case 4:
-                        _day="FRI"
-                        break;
-                    case 5:
-                        _day="SAT"
-                        break;
-                    case 6:
-                        _day="SUN"
-                        break;
-                }
                 if (this.state.tableData[i][j])
                 {
-                    // pickedTime.push({day:_day,time:((i+8).toString()+":30")})
                     pickedTime.push({day:j,time:i})
                 }
             }
@@ -133,7 +108,35 @@ class StudentSubmissionForm extends Component
     {
         var listCopy = []
         listCopy.push({day:"None", time:""})
-        listCopy = listCopy.concat(this.state.pickedTime)
+        for (var e of this.state.pickedTime)
+        {
+            var _day
+            switch (e.day) {
+                case 0:
+                    _day="MON"
+                    break;
+                case 1:
+                    _day="TUE"
+                    break;
+                case 2:
+                    _day="WED"
+                    break;
+                case 3:
+                    _day="THU"
+                    break;
+                case 4:
+                    _day="FRI"
+                    break;
+                case 5:
+                    _day="SAT"
+                    break;
+                case 6:
+                    _day="SUN"
+                    break;
+            }
+            listCopy.push({day: _day, time: ((e.time+8).toString()+":30")})
+        }
+        // listCopy = listCopy.concat(this.state.pickedTime)
         var preferredTimeSelect=[]
         for (var i = 0; i < this.state.numClass; i++)
         {
