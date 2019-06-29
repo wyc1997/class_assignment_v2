@@ -11,7 +11,20 @@ function logStudentData(data, cb) {
 }
 
 function getStudentSchedule(id, cb) {
-    return fetch(`/schedule/${id}`, {
+    return fetch(`/student/${id}`, {
+        method:"GET",
+        headers:{
+            "Content-Type": "application/json",
+            "Accept":"application/json"
+        }
+    })
+    .then(checkStatus)
+    .then(parseJSON)
+    .then(cb)
+}
+
+function getTeacherSchedule(id, cb) {
+    return fetch(`/teacher/${id}`, {
         method:"GET",
         headers:{
             "Content-Type": "application/json",
@@ -38,5 +51,5 @@ function parseJSON(response) {
     return response.json();
 }
 
-const Client = { logStudentData, getStudentSchedule };
+const Client = { logStudentData, getStudentSchedule, getTeacherSchedule };
 export default Client;

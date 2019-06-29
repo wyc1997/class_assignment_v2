@@ -35,24 +35,20 @@ app.post('/user', async (req, res)=>{
         console.log(response.rowCount)
         if (response.rowCount == 0) {
             student_id = total_students+1
-            db.query('INSERT INTO students (id, name) VALUES ($1, $2)', [total_students+1, req.body.name], (err)=> {
+            db.query('INSERT INTO students (id, name, required_classes) VALUES ($1, $2, $3)', [total_students+1, req.body.name, parseInt(req.body.numClass)], (err)=> {
                 if (err) {
                     console.log(err.stack)
                 }
             })
         }
         else {
-            console.log(response.rows[0].id)
             student_id = response.rows[0].id
-            console.log(student_id)
         }
     }
     console.log(student_id)
     for (var e of req.body.pickedTime)
     {
-        let time_id
-        console.log(e.time, e.day)
-        time_id = parseInt(e.time)*7 + parseInt(e.day) + 1
+        let time_id = parseInt(e.time)*7 + parseInt(e.day) + 1
         db.query('INSERT INTO raw_students_available (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [student_id, time_id, teacher_id], (err) => {
             if (err) {console.log(err.stack)}
         })
@@ -71,9 +67,28 @@ app.post('/user', async (req, res)=>{
     res.status(201).send({res:'Success!'})
 })
 
-app.get('/schedule/:id', (req, res)=>{
+app.get('/student/:id', (req, res)=>{
     console.log(req.params.id)
     res.status(201).send({data:studentData[req.params.id].tableData})
+})
+
+app.get('/teacher/:id', async (req, res)=>{
+    console.log(req.params.id)
+    let preferred = await db.query('SELECT * FROM (SELECT timeslots_id, COUNT(timeslots_id) FROM raw_students_preferred GROUP BY timeslots_id) AS foo WHERE count = 1')
+    if (preferred.err) {console.log(preferred.err.stack)}
+    let available = await db.query('SELECT * FROM (SELECT timeslots_id, COUNT(timeslots_id) FROM raw_students_available GROUP BY timeslots_id) AS foo WHERE count = 1')
+    if (available.err) {console.log(available.err.stack)}
+    console.log(preferred)
+    let classes = new Map();
+    for (e of preferred.rows)
+    {
+        let time_id = parseInt(e.timeslots_id)
+        let temp = await db.query('SELECT * FROM raw_students_preferred JOIN students ON students.id = raw_students_preferred.student_id WHERE timeslots_id = $1', [time_id])
+        if (temp.err) {console.log(preferred.err.stack)}
+        // if (temp.rows[0].)
+    }
+    
+    res.status(201).send({})
 })
 
 app.get('/', (req,res)=>{
