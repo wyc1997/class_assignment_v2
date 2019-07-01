@@ -14,6 +14,11 @@ class AssignmentTable extends React.Component
         }
         arr[0][0] = 1
         arr[0][1] = 2
+
+        Client.getTeacherSchedule(1, (res)=>{
+            console.log(res)
+        })
+
         this.state={tableData:arr, studentData:[{name:"Jack", numClass:2, timeSlot:[{row:0, col:0}, {row:0,col:1}], confirmedTime:[]},{name:"Jane", numClass:1, timeSlot:[{row:0,col:1}], confirmedTime:[]}], summaryData:{totalStudent:0, totalLesson:0, totalConflicts:0}}
         this.clickHandler=this.clickHandler.bind(this)
     }
@@ -58,7 +63,7 @@ class AssignmentTable extends React.Component
                 }
             }
         }
-        var studentTable = this.state.studentData.map((item, index)=>{return <div>Name: {item.name} | Number of classes needed: {item.numClass} | Number of classes assigned : {item.confirmedTime.length}</div>})
+        var studentTable = this.state.studentData.map((item, index)=>{return <div key={index}>Name: {item.name} | Number of classes needed: {item.numClass} | Number of classes assigned : {item.confirmedTime.length}</div>})
         return (<div>
             <div>Summary</div>
             <div>{conflictCounter} conflicted time slot(s)!</div>
