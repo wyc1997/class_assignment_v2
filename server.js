@@ -46,14 +46,14 @@ app.post('/user', async (req, res)=>{
         }
     }
     console.log(student_id)
-    for (var e of req.body.pickedTime)
+    for (let e of req.body.pickedTime)
     {
         let time_id = parseInt(e.time)*7 + parseInt(e.day) + 1
         db.query('INSERT INTO raw_students_available (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [student_id, time_id, teacher_id], (err) => {
             if (err) {console.log(err.stack)}
         })
     }
-    for (var e of req.body.preferredTime)
+    for (let e of req.body.preferredTime)
     {
         let time_id = await db.query('SELECT id FROM timeslots WHERE time = $1', [e])
         if (time_id.err) {console.log(time_id.err.stack)}
@@ -73,7 +73,7 @@ app.get('/student/:id', (req, res)=>{
 })
 
 app.get('/teacher/:id', async (req, res)=>{
-    let data = {time:{}}
+    let data = {time:[]}
     console.log(req.params.id)
     let changeFlag = true
 
@@ -81,13 +81,13 @@ app.get('/teacher/:id', async (req, res)=>{
     {
         let preferred = await db.query('SELECT * FROM (SELECT timeslots_id, COUNT(timeslots_id) FROM raw_students_preferred GROUP BY timeslots_id) AS foo WHERE count = 1')
         if (preferred.err) {console.log(preferred.err.stack)}
-        for (e of preferred.rows)
+        for (let e of preferred.rows)
         {
             let time_id = parseInt(e.timeslots_id)
             let temp = await db.query('SELECT * FROM raw_students_preferred JOIN students ON students.id = raw_students_preferred.student_id WHERE timeslots_id = $1', [time_id])
             if (temp.err) {console.log(temp.err.stack)}
             // console.log(temp)
-            data.time[temp.rows[0].timeslots_id]={names:[temp.rows[0].name], conflicted:false}
+            data.time.push({timeslots_id:temp.rows[0].timeslots_id, names:[temp.rows[0].name], conflicted:false})
             db.query('INSERT INTO processed_students_time (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [temp.rows[0].student_id, temp.rows[0].timeslots_id, temp.rows[0].teacher_id], (err)=>{
                 if (err) {console.log(err.stack)}
             })
@@ -95,22 +95,40 @@ app.get('/teacher/:id', async (req, res)=>{
         }
         let available = await db.query('SELECT * FROM (SELECT timeslots_id, COUNT(timeslots_id) FROM raw_students_available GROUP BY timeslots_id) AS foo WHERE count = 1')
         if (available.err) {console.log(available.err.stack)}
-        for (e of available.rows)
+        for (let e of available.rows)
         {
             let time_id = parseInt(e.timeslots_id)
             let temp = await db.query('SELECT * FROM raw_students_available JOIN students ON students.id = raw_students_available.student_id WHERE timeslots_id = $1', [time_id])
             if (temp.err) {console.log(temp.err.stack)}
+            console.log(temp)
 
-            data.time[temp[0].timeslots_id]={name:[temp.rows[0].name], conflicted:false}
+            data.time.push({timeslots_id:temp.rows[0].timeslots_id, name:[temp.rows[0].name], conflicted:false})
             db.query('INSERT INTO processed_students_time (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [temp.rows[0].student_id, temp.rows[0].timeslots_id, temp.rows[0].teacher_id], (err)=>{
                 if (err) {console.log(err.stack)}
             })
             changeFlag = await updateTimeInDB()
         }
+        changeFlag = await updateTimeInDB()
     }
 
     //TODO: select all remaining time, then for each time select the available student
     //put it in data to send to front end
+    let unassignedTime = await db.query('SELECT timeslots_id, COUNT(timeslots_id) FROM raw_students_available GROUP BY timeslots_id')
+    if (unassignedTime.err) {console.log(unassignedTime.err.stack)}
+    for (let e of unassignedTime.rows)
+    {
+        if (e.count > 1)
+        {
+            let temp = await db.query('SELECT * FROM raw_students_available JOIN students ON students.id = student_id WHERE timeslots_id = $1', [e.timeslots_id])
+            if (temp.err) {console.log(temp.err.stack)}
+            let name_arr = []
+            for (let row of temp.rows)
+            {
+                name_arr.push(row.name)
+            }
+            data.time.push({timeslots_id:e.timeslots_id, name:name_arr, conflicted:true})
+        }
+    }
 
     console.log(data)
     res.status(201).send(data)
