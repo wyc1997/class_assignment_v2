@@ -14,21 +14,23 @@ class AssignmentTable extends React.Component
         }
         // arr[0][1] = 1
 
-        this.state={tableData:arr, studentData:[{name:"Jack", numClass:2, timeSlot:[{row:0, col:0}, {row:0,col:1}], confirmedTime:[]},{name:"Jane", numClass:1, timeSlot:[{row:0,col:1}], confirmedTime:[]}], summaryData:{totalStudent:0, totalLesson:0, totalConflicts:0}}
+        this.state={tableData:arr, students:[], studentData:[{name:"Jack", numClass:2, timeSlot:[{row:0, col:0}, {row:0,col:1}], confirmedTime:[]},{name:"Jane", numClass:1, timeSlot:[{row:0,col:1}], confirmedTime:[]}], summaryData:{totalStudent:0, totalLesson:0, totalConflicts:0}}
         this.clickHandler=this.clickHandler.bind(this)
     }
 
     async componentWillMount() 
     {
-        console.log(this.state.tableData)
         let arr = this.state.tableData
+        let studentData = this.state.studentData
+        let students = this.state.students
         await Client.getTeacherSchedule(1, (res)=>{
             console.log(res)
             for (let e of res.time)
             {
                 let row = Math.floor(e.timeslots_id / 7)
                 let col = e.timeslots_id % 7
-                arr[row][col] = e.name.length
+                console.log(e)
+                arr[row][col] = e.names.length
 
                 //TODO: need to somehow transfer student name data from res to state
             }
