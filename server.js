@@ -79,59 +79,26 @@ app.get('/teacher/:id', async (req, res)=>{
 
     while (changeFlag)//iteratively assign time slots
     {
+        changeFlag = false
         let preferred = await db.query('SELECT * FROM (SELECT timeslots_id, COUNT(timeslots_id) FROM raw_students_preferred GROUP BY timeslots_id) AS foo WHERE count = 1')
         if (preferred.err) {console.log(preferred.err.stack)}
         for (let e of preferred.rows)
         {
-            // let time_id = parseInt(e.timeslots_id)
-            // let temp = await db.query('SELECT * FROM raw_students_preferred JOIN students ON students.id = raw_students_preferred.student_id WHERE timeslots_id = $1', [time_id])
-            // if (temp.err) {console.log(temp.err.stack)}
-            // // console.log(temp)
-            // data.time.push({timeslots_id:temp.rows[0].timeslots_id, names:[temp.rows[0].name], conflicted:false})
-            // if (data.students[temp.rows[0].name])
-            // {
-            //     data.students[temp.rows[0].name].push(temp.rows[0].timeslots_id)
-            // }
-            // else
-            // {
-            //     data.students[temp.rows[0].name] = [temp.rows[0].timeslots_id]
-            // }
-            // db.query('INSERT INTO processed_students_time (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [temp.rows[0].student_id, temp.rows[0].timeslots_id, temp.rows[0].teacher_id], (err)=>{
-            //     if (err) {console.log(err.stack)}
-            // })
             await insertProcessedTime(e.timeslots_id, data, true)
-            changeFlag = await updateTimeInDB()
-            console.log("preferred", changeFlag)
+            changeFlag = await updateTimeInDB() || changeFlag
+            console.log("preferred", changeFlag, e.timeslots_id)
         }
         let available = await db.query('SELECT * FROM (SELECT timeslots_id, COUNT(timeslots_id) FROM raw_students_available GROUP BY timeslots_id) AS foo WHERE count = 1')
         if (available.err) {console.log(available.err.stack)}
         for (let e of available.rows)
         {
-            // let time_id = parseInt(e.timeslots_id)
-            // let temp = await db.query('SELECT * FROM raw_students_available JOIN students ON students.id = raw_students_available.student_id WHERE timeslots_id = $1', [time_id])
-            // if (temp.err) {console.log(temp.err.stack)}
-            // console.log(temp)
-
-            // data.time.push({timeslots_id:temp.rows[0].timeslots_id, name:[temp.rows[0].name], conflicted:false})
-            // if (data.students[temp.rows[0].name])
-            // {
-            //     data.students[temp.rows[0].name].push(temp.rows[0].timeslots_id)
-            // }
-            // else
-            // {
-            //     data.students[temp.rows[0].name] = [temp.rows[0].timeslots_id]
-            // }
-            // db.query('INSERT INTO processed_students_time (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [temp.rows[0].student_id, temp.rows[0].timeslots_id, temp.rows[0].teacher_id], (err)=>{
-            //     if (err) {console.log(err.stack)}
-            // })
             await insertProcessedTime(e.timeslots_id, data, false)
-            changeFlag = await updateTimeInDB()
-            console.log("available", changeFlag)
+            changeFlag = await updateTimeInDB() || changeFlag
+            console.log("available", changeFlag, e.timeslots_id)
         }
         // console.log(changeFlag)
-        changeFlag = await updateTimeInDB()
     }
-
+    //TODO: change conflicted of conflicted timeslots to be true
     let unassignedTime = await db.query('SELECT timeslots_id, COUNT(timeslots_id) FROM raw_students_available GROUP BY timeslots_id')
     if (unassignedTime.err) {console.log(unassignedTime.err.stack)}
     for (let e of unassignedTime.rows)
@@ -225,4 +192,14 @@ async function insertProcessedTime(timeslots_id, data, preferredTime)
     await db.query('INSERT INTO processed_students_time (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [temp.rows[0].student_id, temp.rows[0].timeslots_id, temp.rows[0].teacher_id], (err)=>{
         if (err) {console.log(err.stack)}
     })
+
+    await db.query('DELETE FROM raw_students_preferred WHERE timeslots_id = $1', [temp.rows[0].timeslots_id], (err) => {
+        if (err) {console.log(err.stack)}
+    })
+    
+    await db.query('DELETE FROM raw_students_available WHERE timeslots_id = $1', [temp.rows[0].timeslots_id], (err) => {
+        if (err) {console.log(err.stack)}
+    })
+
+    
 }

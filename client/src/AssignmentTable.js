@@ -27,8 +27,8 @@ class AssignmentTable extends React.Component
             console.log(res)
             for (let e of res.time)
             {
-                let row = Math.floor(e.timeslots_id / 7)
-                let col = e.timeslots_id % 7
+                let row = Math.floor((e.timeslots_id-1) / 7)
+                let col = (e.timeslots_id-1) % 7 
                 console.log(e)
                 arr[row][col] = e.names.length
 
