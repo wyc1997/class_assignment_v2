@@ -99,9 +99,9 @@ app.get('/teacher/:id', async (req, res)=>{
             // db.query('INSERT INTO processed_students_time (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [temp.rows[0].student_id, temp.rows[0].timeslots_id, temp.rows[0].teacher_id], (err)=>{
             //     if (err) {console.log(err.stack)}
             // })
-            insertProcessedTime(e.timeslots_id, data, true)
+            await insertProcessedTime(e.timeslots_id, data, true)
             changeFlag = await updateTimeInDB()
-            // console.log(changeFlag)
+            console.log("preferred", changeFlag)
         }
         let available = await db.query('SELECT * FROM (SELECT timeslots_id, COUNT(timeslots_id) FROM raw_students_available GROUP BY timeslots_id) AS foo WHERE count = 1')
         if (available.err) {console.log(available.err.stack)}
@@ -124,9 +124,9 @@ app.get('/teacher/:id', async (req, res)=>{
             // db.query('INSERT INTO processed_students_time (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [temp.rows[0].student_id, temp.rows[0].timeslots_id, temp.rows[0].teacher_id], (err)=>{
             //     if (err) {console.log(err.stack)}
             // })
-            insertProcessedTime(e.timeslots_id, data, false)
+            await insertProcessedTime(e.timeslots_id, data, false)
             changeFlag = await updateTimeInDB()
-            // console.log(changeFlag)
+            console.log("available", changeFlag)
         }
         // console.log(changeFlag)
         changeFlag = await updateTimeInDB()
@@ -206,7 +206,7 @@ async function updateTimeInDB()
     }
     return flag
 }
-//TODO: need to fix bugs with below function where some timeslots will get added twice
+
 async function insertProcessedTime(timeslots_id, data, preferredTime)
 {
     console.log(preferredTime)
@@ -222,7 +222,7 @@ async function insertProcessedTime(timeslots_id, data, preferredTime)
     {
         return
     }
-    db.query('INSERT INTO processed_students_time (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [temp.rows[0].student_id, temp.rows[0].timeslots_id, temp.rows[0].teacher_id], (err)=>{
+    await db.query('INSERT INTO processed_students_time (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [temp.rows[0].student_id, temp.rows[0].timeslots_id, temp.rows[0].teacher_id], (err)=>{
         if (err) {console.log(err.stack)}
     })
 }
