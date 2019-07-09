@@ -113,11 +113,12 @@ app.get('/teacher/:id', async (req, res)=>{
                 name_arr.push(row.name)
                 if (data.students[row.name])
                 {
-                    data.students[row.name].push(e.timeslots_id)
+                    data.students[row.name].timeslots.push(e.timeslots_id)
                 }
                 else
                 {
-                    data.students[row.name] = [e.timeslots_id]
+                    let obj = {timeslots:[e.timeslots_id], required_classes:row.required_classes}
+                    data.students[row.name] = obj
                 }
             }
             data.time.push({timeslots_id:e.timeslots_id, name:name_arr, conflicted:true})
@@ -129,11 +130,12 @@ app.get('/teacher/:id', async (req, res)=>{
         data.time.push({timeslots_id:temp.timeslots_id, names:[temp.name], conflicted:false})
         if (data.students[temp.name])
         {
-            data.students[temp.name].push(temp.timeslots_id)
+            data.students[temp.name].timeslots_id.push(temp.timeslots_id)
         }
         else
         {
-            data.students[temp.name] = [temp.timeslots_id]
+            let obj = {timeslots_id:[temp.timeslots_id], required_classes:temp.required_classes}
+            data.students[temp.name] = obj
         }
     }
     console.log(data)

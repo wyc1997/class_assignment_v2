@@ -34,6 +34,32 @@ class AssignmentTable extends React.Component
 
                 //TODO: need to somehow transfer student name data from res to state
             }
+            console.log(Object.keys(res.students))
+            for (let e of Object.keys(res.students))
+            {
+                if (students.includes(e))
+                {
+                    let temp = students.indexOf(e)
+                    for (let t of res.students[e])
+                    {
+                        let r = Math.floor((t-1)/7)
+                        let c = (t-1) % 7
+                        studentData[temp].timeSlot.push({row:r, col:c})
+                    }
+                }
+                else
+                {
+                    students.push(e)
+                    let arr = []
+                    for (let t of res.students[e].timeslots_id)
+                    {
+                        let r = Math.floor((t-1)/7)
+                        let c = (t-1) % 7
+                        arr.push({row:r, col:c})
+                    }
+                    studentData.push({name:e, numClass:res.students[e].required_classes, timeSlot:arr, confirmedTime:[]})
+                }
+            }
         })
         this.setState({tableData:arr})
     }
