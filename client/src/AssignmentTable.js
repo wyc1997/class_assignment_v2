@@ -13,9 +13,9 @@ class AssignmentTable extends React.Component
             arr.push(new Array(7).fill(0))
         }
         // arr[0][1] = 1
-
-        this.state={tableData:arr, students:[], studentData:[{name:"Jack", numClass:2, timeSlot:[{row:0, col:0}, {row:0,col:1}], confirmedTime:[]},{name:"Jane", numClass:1, timeSlot:[{row:0,col:1}], confirmedTime:[]}], summaryData:{totalStudent:0, totalLesson:0, totalConflicts:0}}
-        this.clickHandler=this.clickHandler.bind(this)
+        // {name:"Jack", numClass:2, timeSlot:[{row:0, col:0}, {row:0,col:1}], confirmedTime:[]},{name:"Jane", numClass:1, timeSlot:[{row:0,col:1}], confirmedTime:[]}
+        this.state={tableData:arr, students:[], studentData:[], summaryData:{totalStudent:0, totalLesson:0, totalConflicts:0}}
+        this.confirmButton=this.confirmButton.bind(this)
     }
 
     async componentWillMount() 
@@ -29,12 +29,8 @@ class AssignmentTable extends React.Component
             {
                 let row = Math.floor((e.timeslots_id-1) / 7)
                 let col = (e.timeslots_id-1) % 7 
-                console.log(e)
                 arr[row][col] = e.names.length
-
-                //TODO: need to somehow transfer student name data from res to state
             }
-            console.log(Object.keys(res.students))
             for (let e of Object.keys(res.students))
             {
                 if (students.includes(e))
@@ -61,12 +57,18 @@ class AssignmentTable extends React.Component
                 }
             }
         })
-        this.setState({tableData:arr})
+        // console.log(studentData)
+        this.setState({tableData:arr, studentData:studentData, students:students})
+        // console.log("after",this.state.studentData)
     }
 
-    clickHandler(row, col, stdt)
+    confirmButton(row, col, stdt)
     {
         console.log(stdt)
+        if (stdt == "")
+        {
+            return
+        }
         var arr = this.state.tableData
         arr[row][col] = stdt
         var list = this.state.studentData
@@ -89,6 +91,7 @@ class AssignmentTable extends React.Component
             }
         }
         this.setState({tableData:arr, studentData:list})
+        console.log(this.state)
     }
 
     render()
@@ -104,6 +107,7 @@ class AssignmentTable extends React.Component
                 }
             }
         }
+        // console.log("this", this.state.studentData)
         var studentTable = this.state.studentData.map((item, index)=>{return <div key={index}>Name: {item.name} | Number of classes needed: {item.numClass} | Number of classes assigned : {item.confirmedTime.length}</div>})
         return (<div>
             <div>Summary</div>
@@ -121,6 +125,7 @@ class Content extends React.Component
     constructor(props)
     {
         super(props)
+        // console.log(this.props.content[0])
         if (this.props.content[0])
         {
             this.state={selectValue:this.props.content[0].name}
@@ -132,6 +137,19 @@ class Content extends React.Component
         this.changeHandler=this.changeHandler.bind(this)
     }
 
+    static getDerivedStateFromProps(props, state)
+    {
+        // console.log(props)
+        if (props.content[0])
+        {
+            return {selectValue:props.content[0].name}
+        }
+        else
+        {
+            return {selectValue:""}
+        }
+    }
+    
     changeHandler(event)
     {
         this.setState({selectValue: event.target.value})
@@ -259,7 +277,7 @@ function TimeTable(props)
                 }
             }
         }
-        list.push(<Row functional={false} key = {i} row={i} time={timeSlot} rowData={props.data[i]} content={arr} clickHandler={props.clickHandler}/>)
+        list.push(<Row functional={false} key = {i} row={i} time={timeSlot} rowData={props.data[i]} content={arr} clickHandler={props.confirmButton}/>)
     }
     return (<div>
         <div style={{display:"flex"}}><Row functional={true} row={-1} rowData={[]} time={"Time"} content={["MON","TUE","WED","THU","FRI","SAT","SUN"]} /></div>

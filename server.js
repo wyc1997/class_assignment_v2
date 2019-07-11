@@ -113,15 +113,15 @@ app.get('/teacher/:id', async (req, res)=>{
                 name_arr.push(row.name)
                 if (data.students[row.name])
                 {
-                    data.students[row.name].timeslots.push(e.timeslots_id)
+                    data.students[row.name].timeslots_id.push(e.timeslots_id)
                 }
                 else
                 {
-                    let obj = {timeslots:[e.timeslots_id], required_classes:row.required_classes}
+                    let obj = {timeslots_id:[e.timeslots_id], required_classes:row.required_classes}
                     data.students[row.name] = obj
                 }
             }
-            data.time.push({timeslots_id:e.timeslots_id, name:name_arr, conflicted:true})
+            data.time.push({timeslots_id:e.timeslots_id, names:name_arr, conflicted:true})
         }
     }
     let assignedTime = await db.query('SELECT * FROM processed_students_time JOIN students ON students.id = student_id')
