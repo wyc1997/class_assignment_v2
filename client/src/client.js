@@ -10,6 +10,29 @@ function logStudentData(data, cb) {
     .then(cb)
 }
 
+function postAssignmentResult(data, cb) {
+    return fetch('/result', {
+        method:"POST",
+        headers: {"Content-Type": "application/json",
+                  "Accept":"application/json"},
+        body:JSON.stringify(data)
+    })
+    .then(checkStatus)
+    .then(parseJSON)
+    .then(cb)
+}
+// function postAssignmentResult(data, cb) {
+//     return fetch('/result', {
+//         method:"POST",
+//         headers: {"Content-Type": "application/json",
+//                   "Accept":"application/json"},
+//         body:JSON.stringify(data)
+//     })
+//     .then(checkStatus)
+//     .then(parseJSON)
+//     .then(cb)
+// }
+
 function getStudentSchedule(id, cb) {
     return fetch(`/student/${id}`, {
         method:"GET",
@@ -51,5 +74,5 @@ function parseJSON(response) {
     return response.json();
 }
 
-const Client = { logStudentData, getStudentSchedule, getTeacherSchedule };
+const Client = { logStudentData, getStudentSchedule, getTeacherSchedule, postAssignmentResult };
 export default Client;

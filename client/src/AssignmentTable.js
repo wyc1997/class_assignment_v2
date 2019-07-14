@@ -16,6 +16,7 @@ class AssignmentTable extends React.Component
         // {name:"Jack", numClass:2, timeSlot:[{row:0, col:0}, {row:0,col:1}], confirmedTime:[]},{name:"Jane", numClass:1, timeSlot:[{row:0,col:1}], confirmedTime:[]}
         this.state={tableData:arr, students:[], studentData:[], summaryData:{totalStudent:0, totalLesson:0, totalConflicts:0}}
         this.confirmButton=this.confirmButton.bind(this)
+        this.submitBotton=this.submitBotton.bind(this)
     }
 
     async componentWillMount() 
@@ -72,7 +73,7 @@ class AssignmentTable extends React.Component
         var arr = this.state.tableData
         arr[row][col] = stdt
         var list = this.state.studentData
-        for (var s of list)
+        for (let s of list)
         {
             for (var i = 0; i < s.timeSlot.length; i++)
             {
@@ -83,7 +84,7 @@ class AssignmentTable extends React.Component
                 }
             }
         }
-        for (var s of list)
+        for (let s of list)
         {
             if (s.name == stdt)
             {
@@ -92,6 +93,22 @@ class AssignmentTable extends React.Component
         }
         this.setState({tableData:arr, studentData:list})
         console.log(this.state)
+    }
+
+    submitBotton()
+    {
+        if (window.confirm("Save data to the server?"))
+        {
+            Client.postAssignmentResult({tableData:this.state.tableData, 
+                studentData:this.state.studentData, 
+                students:this.state.students}, (res)=>{
+                    console.log(res.res)
+            })
+        }
+        else
+        {
+
+        }
     }
 
     render()
@@ -115,8 +132,12 @@ class AssignmentTable extends React.Component
             <div style={{width:600,border:"1px dashed black"}}>Student summary
                 {studentTable}
             </div>
-            <TimeTable data={this.state.tableData} content={this.state.studentData} clickHandler={this.clickHandler}/>
-            </div>)
+                <TimeTable data={this.state.tableData} content={this.state.studentData} clickHandler={this.clickHandler}/>
+            <div>
+                <button onClick={this.submitBotton}>submit</button>
+            </div>
+            </div>
+            )
     }
 }
 

@@ -142,6 +142,12 @@ app.get('/teacher/:id', async (req, res)=>{
     res.status(201).send(data)
 })
 
+//TODO: need to process information passed back
+app.post('/result', async (req, res)=>{
+    console.log(req.body)
+    res.status(201).send({res:"received"})
+})
+
 app.get('/', (req,res)=>{
     console.log('hello')
 })
