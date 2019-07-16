@@ -95,19 +95,26 @@ class AssignmentTable extends React.Component
         console.log(this.state)
     }
 
+    //button to post confirmed students data to the server
     submitBotton()
     {
         if (window.confirm("Save data to the server?"))
         {
-            Client.postAssignmentResult({tableData:this.state.tableData, 
-                studentData:this.state.studentData, 
-                students:this.state.students}, (res)=>{
+            let obj = {}
+            let studentData = this.state.studentData
+            for (let s of studentData)
+            {
+                let arr = []
+                for (let temp of s.confirmedTime)
+                {
+                    arr.push(temp)
+                }
+                console.log(s)
+                obj[s.name] = arr 
+            }
+            Client.postAssignmentResult(obj, (res)=>{
                     console.log(res.res)
             })
-        }
-        else
-        {
-
         }
     }
 
@@ -132,7 +139,7 @@ class AssignmentTable extends React.Component
             <div style={{width:600,border:"1px dashed black"}}>Student summary
                 {studentTable}
             </div>
-                <TimeTable data={this.state.tableData} content={this.state.studentData} clickHandler={this.clickHandler}/>
+                <TimeTable data={this.state.tableData} content={this.state.studentData} confirmButton={this.confirmButton}/>
             <div>
                 <button onClick={this.submitBotton}>submit</button>
             </div>
@@ -146,6 +153,7 @@ class Content extends React.Component
     constructor(props)
     {
         super(props)
+        this.state={selectValue:""}
         // console.log(this.props.content[0])
         if (this.props.content[0])
         {
@@ -161,9 +169,13 @@ class Content extends React.Component
     static getDerivedStateFromProps(props, state)
     {
         // console.log(props)
-        if (props.content[0])
+        if (props.content[0] && state.selectValue == "")
         {
             return {selectValue:props.content[0].name}
+        }
+        else if (state.selectValue != "")
+        {
+            return {}
         }
         else
         {
@@ -206,7 +218,7 @@ class Content extends React.Component
             return (<div>
                 {status}
                 <select onChange={this.changeHandler}>{list}</select>
-                <button onClick={()=>this.props.clickHandler(this.props.row, this.props.col, this.state.selectValue)}>confirm</button>
+                <button onClick={()=>this.props.confirmButton(this.props.row, this.props.col, this.state.selectValue)}>confirm</button>
             </div>)
         }
     }
@@ -243,7 +255,7 @@ function Cell(props)
         }
     }
     
-    return <div style={style} key={props.col}><Content functional={props.functional} row={props.row} col={props.col} cellData={props.cellData} content={props.content} clickHandler={props.clickHandler}/></div>
+    return <div style={style} key={props.col}><Content functional={props.functional} row={props.row} col={props.col} cellData={props.cellData} content={props.content} confirmButton={props.confirmButton}/></div>
 } 
 
 function Row(props)
@@ -260,12 +272,12 @@ function Row(props)
     }
     else        
     {
-        for (var i = 0; i < 7; i++)
+        for (let i = 0; i < 7; i++)
         {
             var arr = []
             for (var element of props.content)
             {
-                for (var t of element.timeSlot)
+                for (let t of element.timeSlot)
                 {
                     if (t.col == i)
                     {
@@ -274,7 +286,7 @@ function Row(props)
                     }
                 }
             }
-            list.push(<Cell functional={false} key={i} row={props.row} col={i} cellData={props.rowData[i]} content={arr} clickHandler={props.clickHandler}/>)
+            list.push(<Cell functional={false} key={i} row={props.row} col={i} cellData={props.rowData[i]} content={arr} confirmButton={props.confirmButton}/>)
         }
     }
     return <div style={{display:"flex"}} >{list}</div>
@@ -298,7 +310,7 @@ function TimeTable(props)
                 }
             }
         }
-        list.push(<Row functional={false} key = {i} row={i} time={timeSlot} rowData={props.data[i]} content={arr} clickHandler={props.confirmButton}/>)
+        list.push(<Row functional={false} key = {i} row={i} time={timeSlot} rowData={props.data[i]} content={arr} confirmButton={props.confirmButton}/>)
     }
     return (<div>
         <div style={{display:"flex"}}><Row functional={true} row={-1} rowData={[]} time={"Time"} content={["MON","TUE","WED","THU","FRI","SAT","SUN"]} /></div>

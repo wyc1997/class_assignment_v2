@@ -144,7 +144,18 @@ app.get('/teacher/:id', async (req, res)=>{
 
 //TODO: need to process information passed back
 app.post('/result', async (req, res)=>{
-    console.log(req.body)
+    for (let s of Object.keys(req.body))
+    {
+        let student_id = await db.query("SELECT * FROM students WHERE name = $1", [s])
+        if (student_id.err) {console.log(student_id.err.stack)}
+        for (let t of req.body[s])
+        {
+            let timeslots_id = await db.query("SELECT * FROM timeslots WHERE row = $1 and col = $2", [t.row, t.col])
+            await db.query("INSERT INTO final_time (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)", [student_id.rows[0].id, timeslots_id.rows[0].id, 1], (err)=>{
+                if (err) {console.log(err.stack)}
+            })
+        }
+    }
     res.status(201).send({res:"received"})
 })
 
