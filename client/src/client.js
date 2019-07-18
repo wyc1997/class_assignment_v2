@@ -21,17 +21,6 @@ function postAssignmentResult(data, cb) {
     .then(parseJSON)
     .then(cb)
 }
-// function postAssignmentResult(data, cb) {
-//     return fetch('/result', {
-//         method:"POST",
-//         headers: {"Content-Type": "application/json",
-//                   "Accept":"application/json"},
-//         body:JSON.stringify(data)
-//     })
-//     .then(checkStatus)
-//     .then(parseJSON)
-//     .then(cb)
-// }
 
 function getStudentSchedule(id, cb) {
     return fetch(`/student/${id}`, {
@@ -59,6 +48,19 @@ function getTeacherSchedule(id, cb) {
     .then(cb)
 }
 
+function getFinalSchedule(id, cb) {
+    return fetch(`/final/${id}`, {
+        method:"GET",
+        headers:{
+            "Content-Type": "application/json",
+            "Accept":"application/json"
+        }
+    })
+    .then(checkStatus)
+    .then(parseJSON)
+    .then(cb)
+}
+
 function checkStatus(response) {
     if (response.status >= 200 && response.status < 300) {
         return response;
@@ -74,5 +76,5 @@ function parseJSON(response) {
     return response.json();
 }
 
-const Client = { logStudentData, getStudentSchedule, getTeacherSchedule, postAssignmentResult };
+const Client = { logStudentData, getStudentSchedule, getTeacherSchedule, postAssignmentResult, getFinalSchedule};
 export default Client;

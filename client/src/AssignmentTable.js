@@ -144,7 +144,7 @@ class AssignmentTable extends React.Component
                 <button onClick={this.submitBotton}>submit</button>
             </div>
             </div>
-            )
+        )
     }
 }
 

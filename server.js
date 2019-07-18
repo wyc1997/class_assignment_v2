@@ -159,6 +159,19 @@ app.post('/result', async (req, res)=>{
     res.status(201).send({res:"received"})
 })
 
+app.get('/final/:id', async (req, res) => {
+    console.log(req.params.id)
+    let data = await db.query('SELECT * FROM final_time JOIN students ON students.id=student_id JOIN timeslots ON timeslots_id=timeslots.id')
+    if (data.err) {console.log(data.err.stack)}
+    let arr = []
+    for (let r of data.rows)
+    {
+        let obj = {row:r.row, col:r.col, student:r.name}
+        arr.push(obj)
+    }
+    res.status(201).send({data:arr})
+})
+
 app.get('/', (req,res)=>{
     console.log('hello')
 })
