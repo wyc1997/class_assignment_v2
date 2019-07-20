@@ -1,8 +1,9 @@
 import React from "react"
 import Client from "./client"
 import Popup from "reactjs-popup"
+import { ENGINE_METHOD_ALL } from "constants";
 
-//TODO: add update popup window and summary table 
+//TODO: add summary table 
 
 class TeacherTimeTable extends React.Component
 {
@@ -38,7 +39,7 @@ class TeacherTimeTable extends React.Component
     {
         return (
             <div>
-                <TimeTable data={this.state.tableData} content={this.state.studentData}/>
+                <TimeTable data={this.state.tableData} content={this.state.studentData} allStudent={this.state.students} />
             </div>
         )
 
@@ -56,7 +57,7 @@ class Content extends React.Component
     }
 
     render()
-    {
+    {   
         if (this.props.functional)
         {
             return <div>{this.props.content}</div>
@@ -71,7 +72,7 @@ class Content extends React.Component
             console.log(this.props)
             return (<div>
                 {text}
-                <button>Update</button>
+                <UpdatePopup time="need to be fixed" student={this.props.cellData} allStudent={this.props.allStudent} ></UpdatePopup>
             </div>)
         }
     }
@@ -108,19 +109,19 @@ function Cell(props)
         }
     }
     
-    return <div style={style} key={props.col}><Content functional={props.functional} row={props.row} col={props.col} cellData={props.cellData} content={props.content}/></div>
+    return <div style={style} key={props.col}><Content functional={props.functional} row={props.row} col={props.col} cellData={props.cellData} content={props.content} allStudent={props.allStudent} /></div>
 } 
 
 function Row(props)
 {
     var list = []
-    list.push(<Cell functional={true} key={-1} row={props.row} col={-1} content={props.time} />)
+    list.push(<Cell functional={true} key={-1} row={props.row} col={-1} content={props.time} allStudent={props.allStudent} />)
     if (props.functional)
     {
         for (var i = 0; i < 7; i++)
         {   
 
-            list.push(<Cell functional={true} key={i} row={props.row} col ={i} cellData={props.rowData[i]} content={props.content[i]}/>)
+            list.push(<Cell functional={true} key={i} row={props.row} col ={i} cellData={props.rowData[i]} content={props.content[i]} allStudent={props.allStudent} />)
         }
     }
     else        
@@ -139,7 +140,7 @@ function Row(props)
                     }
                 }
             }
-            list.push(<Cell functional={false} key={i} row={props.row} col={i} cellData={props.rowData[i]} content={arr}/>)
+            list.push(<Cell functional={false} key={i} row={props.row} col={i} cellData={props.rowData[i]} content={arr} allStudent={props.allStudent} />)
         }
     }
     return <div style={{display:"flex"}} >{list}</div>
@@ -163,12 +164,56 @@ function TimeTable(props)
                 }
             }
         }
-        list.push(<Row functional={false} key = {i} row={i} time={timeSlot} rowData={props.data[i]} content={arr}/>)
+        list.push(<Row functional={false} key = {i} row={i} time={timeSlot} rowData={props.data[i]} content={arr} allStudent={props.allStudent} />)
     }
     return (<div>
-        <div style={{display:"flex"}}><Row functional={true} row={-1} rowData={[]} time={"Time"} content={["MON","TUE","WED","THU","FRI","SAT","SUN"]} /></div>
+        <div style={{display:"flex"}}><Row functional={true} row={-1} rowData={[]} time={"Time"} content={["MON","TUE","WED","THU","FRI","SAT","SUN"]} allStudent={props.allStudent} /></div>
         {list}
     </div>)
+}
+
+//TODO: need to do something with the confirm button, can directly send to server
+class UpdatePopup extends React.Component
+{
+    constructor(props)
+    {
+        super(props)
+        this.state = {selectValue:this.props.allStudent[0]}
+        this.changeHandler=this.changeHandler.bind(this)
+        this.confirmButton=this.confirmButton.bind(this)
+    }
+
+    changeHandler(event)
+    {
+        this.setState({selectValue:event.target.value})
+    }
+
+    confirmButton()
+    {
+        console.log(this.state.selectValue)
+    }
+
+    render()
+    {
+        let list = this.props.allStudent.map((item, index)=> {
+            return (<option key={index}>{item}</option>)
+        })
+        
+        return (<Popup trigger={<button>Update</button>} modal closeOnDocumentClick>
+                    {close=>(<div>
+                    <div>Update</div>
+                    <br/>
+                    <div>Time: {this.props.time} || Current Student: {this.props.student} </div>
+                    <br/>
+                    <div>
+                        Change to: 
+                        <select onChange={this.changeHandler} >{list} </select>
+                    </div>
+                    <div><button onClick={this.confirmButton} >Confirm</button>
+                         <button onClick={()=>{close()}}>Cancel</button></div>
+                    </div>)}
+            </Popup>)
+    }
 }
 
 export default TeacherTimeTable 
