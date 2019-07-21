@@ -23,15 +23,11 @@ class TeacherTimeTable extends React.Component
         let data = await Client.getFinalSchedule(1)
         let tableData = this.state.tableData
         let students = this.state.students
-        for (let r of data.data)
+        for (let r of data.time)
         {
             tableData[r.row][r.col] = r.student
-            if (!students.includes(r.student))
-            {
-                students.push(r.student)
-            }
         }
-        this.setState({tableData:tableData, students:students})
+        this.setState({tableData:tableData, students:data.students})
         console.log(this.state)
     }
 
@@ -72,7 +68,7 @@ class Content extends React.Component
             console.log(this.props)
             return (<div>
                 {text}
-                <UpdatePopup time="need to be fixed" student={this.props.cellData} allStudent={this.props.allStudent} ></UpdatePopup>
+                <UpdatePopup time="need to be fixed" row={this.props.row} col={this.props.col} student={this.props.cellData} allStudent={this.props.allStudent} ></UpdatePopup>
             </div>)
         }
     }
@@ -172,7 +168,6 @@ function TimeTable(props)
     </div>)
 }
 
-//TODO: need to do something with the confirm button, can directly send to server
 class UpdatePopup extends React.Component
 {
     constructor(props)
@@ -190,6 +185,9 @@ class UpdatePopup extends React.Component
 
     confirmButton()
     {
+        Client.updateFinalTime({row:this.props.row, col:this.props.col, newStudent:this.state.selectValue}, (res)=>{
+            if (!alert(res.res)) {window.location.reload()}
+        })
         console.log(this.state.selectValue)
     }
 

@@ -169,7 +169,29 @@ app.get('/final/:id', async (req, res) => {
         let obj = {row:r.row, col:r.col, student:r.name}
         arr.push(obj)
     }
-    res.status(201).send({data:arr})
+    let allStudents = await db.query('SELECT * FROM students')
+    if (allStudents.err) {allStudents.err.stack}
+    let student_arr = []
+    for (let s of allStudents.rows)
+    {
+        student_arr.push(s.name)
+    }
+    res.status(201).send({time:arr, students:student_arr})
+})
+
+app.post('/update', async (req, res) => {
+    console.log(req.body)
+    let time = await db.query('SELECT * FROM timeslots WHERE row = $1 AND col = $2', [req.body.row, req.body.col])
+    if (time.err) {console.log(time.err.stack)}
+    await db.query('DELETE FROM final_time WHERE timeslots_id = $1', [time.rows[0].id], (err)=>{
+        if (err) {console.log(err.stack)} 
+    })
+    let student = await db.query('SELECT * FROM students WHERE name = $1', [req.body.newStudent])
+    if (student.err) {console.log(student.err.stack)}
+    await db.query('INSERT INTO final_time (student_id, timeslots_id, teacher_id) VALUES ($1, $2, $3)', [student.rows[0].id, time.rows[0].id, 1], (err)=>{
+        if (err) {console.log(err.stack)}
+    })
+    res.status(201).send({res:"done"})
 })
 
 app.get('/', (req,res)=>{
