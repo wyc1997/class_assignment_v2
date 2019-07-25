@@ -67,9 +67,17 @@ app.post('/user', async (req, res)=>{
     res.status(201).send({res:'Success!'})
 })
 
-app.get('/student/:id', (req, res)=>{
+app.get('/student/:id', async (req, res)=>{
     console.log(req.params.id)
-    res.status(201).send({data:studentData[req.params.id].tableData})
+    let data = await db.query('SELECT * FROM final_time JOIN timeslots ON final_time.timeslots_id = timeslots.id JOIN students ON student_id = students.id WHERE student_id = $1', [req.params.id])
+    if (data.err) {console.log(data.err.stack)}
+    
+    let arr = []
+    for (let r of data.rows)
+    {
+        arr.push({row:r.row, col:r.col})
+    }
+    res.status(201).send({name:data.rows[0].name ,data:arr})
 })
 
 app.get('/teacher/:id', async (req, res)=>{

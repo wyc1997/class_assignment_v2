@@ -6,17 +6,20 @@ class StudentTimeTable extends React.Component
     constructor(props)
     {
         super(props)
-        console.log("this is", props.match.params.Id)
+        console.log("this is", props.Id)
         var arr=[]
         for (var i = 0; i < 13; i++)
         {
             arr.push(new Array(7).fill(0))
         }
-        this.state={schedule:arr}
-        var data
-        Client.getStudentSchedule(props.match.params.Id, (res)=>{
-            data = res.data
-            this.setState({schedule:data})
+        this.state={name:"", schedule:arr}
+        Client.getStudentSchedule(props.Id, (res)=>{
+            let arr = this.state.schedule
+            for (let temp of res.data)
+            {
+                arr[temp.row][temp.col]++
+            }
+            this.setState({name:res.name ,schedule:arr})
             console.log('Successfully received data from server!')
         })
         console.log(this.state.schedule)
@@ -26,7 +29,9 @@ class StudentTimeTable extends React.Component
     render()
     {
         console.log(this.state.schedule)
-        return <TimeTable data={this.state.schedule}/>
+        return (<div>
+        <span>Name: {this.state.name}</span>
+        <TimeTable data={this.state.schedule}/></div>)
     }
 }
 

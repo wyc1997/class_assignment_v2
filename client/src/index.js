@@ -10,7 +10,8 @@ import TeacherTimeTable from './TeacherTimeTable'
 
 // ReactDOM.render(<StudentSubmissionForm/>, document.getElementById('root'));
 // ReactDOM.render(<AssignmentTable />, document.getElementById('root'));
-ReactDOM.render(<TeacherTimeTable/>, document.getElementById('root'));
+// ReactDOM.render(<TeacherTimeTable/>, document.getElementById('root'));
+ReactDOM.render(<StudentTimeTable Id={4}/>, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
