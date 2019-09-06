@@ -1,6 +1,6 @@
 import {BrowserRouter, Route} from 'react-router-dom';
-import StudentSubmissionForm from './StudentSubmissionForm'
-import StudentTimeTable from './StudentTimeTable'
+import StudentSubmissionForm from './components/StudentSubmissionForm'
+import StudentTimeTable from './components/StudentTimeTable'
 import React from 'react'
 
 

@@ -150,7 +150,6 @@ app.get('/teacher/:id', async (req, res)=>{
     res.status(201).send(data)
 })
 
-//TODO: need to process information passed back
 app.post('/result', async (req, res)=>{
     for (let s of Object.keys(req.body))
     {

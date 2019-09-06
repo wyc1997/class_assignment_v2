@@ -1,5 +1,5 @@
 import React from "react"
-import Client from "./client"
+import Client from "../client"
 import Popup from "reactjs-popup"
 import { ENGINE_METHOD_ALL } from "constants";
 

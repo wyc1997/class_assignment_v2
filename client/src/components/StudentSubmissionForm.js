@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
-import Client from './client'
+import Client from '../client'
 
 class StudentSubmissionForm extends Component
 {
